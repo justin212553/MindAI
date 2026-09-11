@@ -2,7 +2,7 @@
 // buttons. Owns its own DOM wiring; notifies the caller via onBoardChange
 // whenever the active board changes so the canvas can re-render.
 
-import { getState, newBoard, setActiveBoard, deleteBoard } from '../state/store.js';
+import { getState, newBoard, renameBoard, setActiveBoard, deleteBoard } from '../state/store.js';
 
 let onBoardChangeCb = () => {};
 let newBoardBtn, newBoardInput;
@@ -72,6 +72,15 @@ export function renderSidebar() {
       await onBoardChangeCb({ fit: true });
     });
 
+    const editBtn = document.createElement('button');
+    editBtn.className = 'board-edit';
+    editBtn.textContent = '✏️';
+    editBtn.title = '이름 바꾸기';
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startRenameBoard(li, nameSpan, b);
+    });
+
     const delBtn = document.createElement('button');
     delBtn.className = 'board-delete';
     delBtn.textContent = '✕';
@@ -85,7 +94,40 @@ export function renderSidebar() {
     });
 
     li.appendChild(nameSpan);
+    li.appendChild(editBtn);
     li.appendChild(delBtn);
     list.appendChild(li);
   });
+}
+
+// Swaps one board-list item's name span for an inline text input, same
+// "commit on Enter/blur, cancel on Escape" pattern as the new-board input.
+function startRenameBoard(li, nameSpan, board) {
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'board-name-input';
+  input.value = board.title;
+  li.replaceChild(input, nameSpan);
+  input.focus();
+  input.select();
+
+  let done = false;
+  function commit() {
+    if (done) return;
+    done = true;
+    const value = input.value.trim();
+    if (value && value !== board.title) renameBoard(board.id, value);
+    renderSidebar();
+  }
+  input.addEventListener('click', (e) => e.stopPropagation());
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
+      e.preventDefault();
+      commit();
+    } else if (e.key === 'Escape') {
+      done = true; // discard — re-render without saving
+      renderSidebar();
+    }
+  });
+  input.addEventListener('blur', commit);
 }

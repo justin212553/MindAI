@@ -88,6 +88,16 @@ export function setActiveBoard(id) {
   saveState();
 }
 
+export function renameBoard(id, title) {
+  const board = state.boards.find((b) => b.id === id);
+  if (!board) return;
+  const finalTitle = title.trim();
+  if (!finalTitle) return; // keep the old title rather than allow a blank one
+  board.title = finalTitle;
+  board.updatedAt = Date.now();
+  saveState();
+}
+
 export function deleteBoard(id) {
   state.boards = state.boards.filter((b) => b.id !== id);
   if (state.activeBoardId === id) {
