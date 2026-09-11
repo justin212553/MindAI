@@ -76,7 +76,11 @@ async function init() {
   // native prompt() dialog.
   if (!getState().boards.length) startNewBoard();
 
-  initItems({ onItemAdded: () => renderActiveBoard({ fit: false }), setStatus });
+  initItems({
+    onItemAdded: () => renderActiveBoard({ fit: false }),
+    onBoardCreated: () => refreshAll({ fit: true }),
+    setStatus,
+  });
   initLinkMode({ setStatus });
   initImportExport({
     onImported: async () => {

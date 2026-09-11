@@ -20,13 +20,13 @@
 //   not something we trust the model to infer — the user states the
 //   grouping directly instead.
 
-import { getActiveBoard, saveState, uid } from '../state/store.js';
+import { getActiveBoard, newBoard, saveState, uid } from '../state/store.js';
 import { buildOutlineForLLM } from '../mindmap/index.js';
 import { getScopeNodeId } from '../node-scope/node-scope.js';
 
 let bulkModeActive = false;
 
-export function initItems({ onItemAdded, setStatus }) {
+export function initItems({ onItemAdded, onBoardCreated, setStatus }) {
   const input = document.getElementById('item-input');
   const bulkInput = document.getElementById('item-bulk-input');
   const bulkModeBtn = document.getElementById('bulk-mode-btn');
@@ -50,16 +50,16 @@ export function initItems({ onItemAdded, setStatus }) {
         .filter(Boolean);
       bulkInput.value = '';
       if (lines.length <= 1) {
-        await addItem(lines[0] || '', { onItemAdded, setStatus, inputEl: bulkInput });
+        await addItem(lines[0] || '', { onItemAdded, onBoardCreated, setStatus, inputEl: bulkInput });
       } else {
         const [parentText, ...childTexts] = lines;
-        await addBulkItems(parentText, childTexts, { onItemAdded, setStatus, inputEl: bulkInput });
+        await addBulkItems(parentText, childTexts, { onItemAdded, onBoardCreated, setStatus, inputEl: bulkInput });
       }
       bulkInput.focus();
     } else {
       const text = input.value;
       input.value = '';
-      await addItem(text, { onItemAdded, setStatus, inputEl: input });
+      await addItem(text, { onItemAdded, onBoardCreated, setStatus, inputEl: input });
     }
   }
 
@@ -117,9 +117,15 @@ async function resolveNewNode(board, text) {
   return { parentId, label: decision.label || text.slice(0, 24), summary: decision.summary };
 }
 
-async function addItem(text, { onItemAdded, setStatus, inputEl }) {
-  const board = getActiveBoard();
-  if (!board || !text.trim()) return;
+async function addItem(text, { onItemAdded, onBoardCreated, setStatus, inputEl }) {
+  if (!text.trim()) return;
+  // No mindmap selected (fresh visit, or every board got deleted) — rather
+  // than silently dropping the input, treat it as the seed of a brand-new
+  // mindmap named after itself.
+  let board = getActiveBoard();
+  const boardCreated = !board;
+  if (boardCreated) board = newBoard(text.trim().slice(0, 30));
+
   setStatus('정리하는 중...');
   document.getElementById('submit-btn').disabled = true;
   try {
@@ -130,20 +136,24 @@ async function addItem(text, { onItemAdded, setStatus, inputEl }) {
 
     board.updatedAt = Date.now();
     saveState();
-    await onItemAdded();
+    await (boardCreated ? onBoardCreated() : onItemAdded());
     setStatus('');
   } catch (err) {
     console.error(err);
     setStatus('오류: ', true);
     if (inputEl && !inputEl.value) inputEl.value = text;
+    if (boardCreated) await onBoardCreated(); // reflect the new board in the sidebar even though the item itself failed
   } finally {
     document.getElementById('submit-btn').disabled = false;
   }
 }
 
-async function addBulkItems(parentText, childTexts, { onItemAdded, setStatus, inputEl }) {
-  const board = getActiveBoard();
-  if (!board || !parentText.trim()) return;
+async function addBulkItems(parentText, childTexts, { onItemAdded, onBoardCreated, setStatus, inputEl }) {
+  if (!parentText.trim()) return;
+  let board = getActiveBoard();
+  const boardCreated = !board;
+  if (boardCreated) board = newBoard(parentText.trim().slice(0, 30));
+
   setStatus('정리하는 중...');
   document.getElementById('submit-btn').disabled = true;
   try {
@@ -160,12 +170,13 @@ async function addBulkItems(parentText, childTexts, { onItemAdded, setStatus, in
 
     board.updatedAt = Date.now();
     saveState();
-    await onItemAdded();
+    await (boardCreated ? onBoardCreated() : onItemAdded());
     setStatus(`${childTexts.length + 1}개 노드를 추가했습니다`);
   } catch (err) {
     console.error(err);
     setStatus('오류: ', true);
     if (inputEl && !inputEl.value) inputEl.value = [parentText, ...childTexts].join('\n');
+    if (boardCreated) await onBoardCreated();
   } finally {
     document.getElementById('submit-btn').disabled = false;
   }
