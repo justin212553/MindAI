@@ -1,0 +1,9 @@
+{
+  "name": "MindAI",
+  "version": "0.1.0",
+  "private": true,
+  "description": "무엇이든 던지면 알아서 마인드맵으로 정리해주는 브레인스토밍 도구",
+  "engines": {
+    "node": ">=18"
+  }
+}
