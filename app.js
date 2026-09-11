@@ -61,6 +61,7 @@ async function init() {
     },
     onNodesAdded: () => renderActiveBoard({ fit: false }),
     onColorChanged: () => renderActiveBoard({ fit: false }),
+    onMoved: () => renderActiveBoard({ fit: false }),
   });
 
   initSidebar({

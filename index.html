@@ -1,20 +1,24 @@
 <!doctype html>
 <html lang="ko">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MindAI</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cosmap.ai</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="img/icon.png">
 </head>
+
 <body>
 <div id="app">
   <aside id="sidebar">
     <div id="sidebar-top">
       <button id="collapse-btn" title="접기/펼치기">☰</button>
-      <span id="sidebar-title">마인드맵</span>
+      <img id="sidebar-logo" src="img/icon_trans.png" width="20" alt="cosmap.ai 로고" />
+      <span id="sidebar-title">cosmap.ai</span>
     </div>
     <div id="sidebar-actions">
-      <button id="new-board-btn">+ 새 마인드맵</button>
+      <button id="new-board-btn">🧠 + 새 마인드맵</button>
       <input id="new-board-input" type="text" placeholder="마인드맵 이름 (Enter로 생성)" autocomplete="off" hidden />
       <button id="md-import-btn" title="AI와 나눈 대화를 요약해서 마크다운 파일로 받은 뒤 업로드하면 새 마인드맵으로 만들어줍니다">🤖 AI 대화 불러오기</button>
       <div id="md-import-panel" hidden>
@@ -22,12 +26,12 @@
         <pre id="md-import-prompt"></pre>
         <input id="md-import-file" type="file" accept=".md,.txt" hidden />
         <div id="md-import-actions">
-          <button id="md-import-upload-btn">📎 md 파일 업로드</button>
-          <button id="md-import-cancel">취소</button>
+          <button id="md-import-upload-btn">📤 md 파일 업로드</button>
+          <button id="md-import-cancel">❌ 취소</button>
         </div>
       </div>
-      <button id="export-btn">내보내기</button>
-      <button id="import-btn">불러오기</button>
+      <button id="export-btn">💾 내보내기</button>
+      <button id="import-btn">📂 불러오기</button>
       <input id="import-file" type="file" accept="application/json" hidden />
     </div>
     <ul id="board-list"></ul>
@@ -44,24 +48,32 @@
         <div id="node-detail-header">
           <strong id="node-detail-label"></strong>
           <div id="node-detail-header-actions">
-            <input id="node-detail-color" type="color" title="노드 색상" />
-            <button id="node-detail-color-reset" title="색상 초기화(자동 배색으로)">↺</button>
             <button id="node-detail-close" title="닫기">✕</button>
           </div>
+        </div>
+        <div id="node-detail-move">
+          <button id="node-move-up-btn" title="바로 위 항목과 순서를 바꿔요">▲ 위로</button>
+          <button id="node-move-down-btn" title="바로 아래 항목과 순서를 바꿔요">▼ 아래로</button>
+          <button id="node-move-left-btn" title="한 단계 바깥으로 나가요">◀ 내어쓰기</button>
+          <button id="node-move-right-btn" title="바로 위 항목 밑으로 들어가요">▶ 들여쓰기</button>
+        </div>
+        <div id="node-detail-color-row">
+          <input id="node-detail-color" type="color" title="노드 색상" />
+          <button id="node-detail-color-reset" title="색상 초기화(자동 배색으로)">↺ 초기화</button>
         </div>
         <textarea id="node-detail-summary" placeholder="요약 (자동 생성됨, 직접 수정 가능)" rows="3"></textarea>
         <textarea id="node-detail-memo" placeholder="이 노드에 대한 메모..." rows="10"></textarea>
         <div id="node-ask">
-          <button id="node-ask-toggle">✨ Gemini에게 질문하기</button>
+          <button id="node-ask-toggle">💬 Gemini에게 질문하기</button>
           <div id="node-ask-panel" hidden>
             <textarea id="node-ask-question" rows="2" placeholder="이 노드를 기준으로 무엇이든 물어보세요... (Ctrl+Enter로 전송)"></textarea>
-            <button id="node-ask-submit">질문하기</button>
+            <button id="node-ask-submit">🚀 질문하기</button>
             <div id="node-ask-status"></div>
             <div id="node-ask-answer" hidden></div>
           </div>
         </div>
         <div id="node-detail-actions">
-          <button id="node-detail-scope-btn" title="여기에 새 항목을 바로 추가하도록 지정">📍 여기에 추가</button>
+          <button id="node-detail-scope-btn" title="여기에 새 항목을 바로 추가하도록 지정">📌 여기에 추가</button>
           <button id="node-detail-delete-btn" title="이 노드와 하위 노드를 모두 삭제">🗑 삭제</button>
         </div>
       </aside>
@@ -75,7 +87,7 @@
       <input id="item-input" type="text" placeholder="아이디어, 할 일, 뭐든 던져보세요... (Enter로 추가)" autocomplete="off" />
       <textarea id="item-bulk-input" rows="3" placeholder="첫 줄: 부모 카테고리&#10;둘째 줄부터: 자식 항목 (한 줄에 하나씩)" hidden></textarea>
       <button id="bulk-mode-btn" title="첫 줄은 부모, 나머지 줄은 자식 노드로 한번에 추가">☰ 목록으로</button>
-      <button id="submit-btn">추가</button>
+      <button id="submit-btn">➕ 추가</button>
     </div>
     <div id="status-line"></div>
   </main>

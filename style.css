@@ -325,16 +325,6 @@ html, body {
   gap: 4px;
   flex-shrink: 0;
 }
-#node-detail-color {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: none;
-  cursor: pointer;
-}
-#node-detail-color-reset,
 #node-detail-close {
   background: none;
   border: none;
@@ -346,7 +336,48 @@ html, body {
   flex-shrink: 0;
 }
 #node-detail-close:hover { color: var(--danger); background: rgba(255, 107, 107, 0.1); }
-#node-detail-color-reset:hover { color: var(--text); background: var(--panel-2); }
+#node-detail-color-row {
+  display: flex;
+  gap: 8px;
+}
+#node-detail-color-row input[type="color"] {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+#node-detail-color-reset {
+  flex-shrink: 0;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+#node-detail-color-reset:hover { border-color: var(--accent); }
+#node-detail-move {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+#node-detail-move button {
+  padding: 8px 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+}
+#node-detail-move button:hover:not(:disabled) { border-color: var(--accent); }
+#node-detail-move button:disabled { opacity: 0.35; cursor: default; }
 #node-detail-summary,
 #node-detail-memo {
   padding: 8px 10px;
